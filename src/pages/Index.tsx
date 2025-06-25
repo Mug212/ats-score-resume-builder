@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,7 +91,7 @@ const Index = () => {
 
   const calculateATSScore = (): number => {
     let score = 0;
-    
+
     // Personal Information (20 points)
     const { personalInfo } = resumeData;
     if (personalInfo.fullName) score += 3;
@@ -128,7 +127,7 @@ const Index = () => {
       resumeData.education.length > 0,
       resumeData.skills.technical.length > 0,
     ].filter(Boolean).length;
-    
+
     if (completedSections >= 3) score += 5;
 
     return Math.min(score, 100);
@@ -186,55 +185,60 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-2">
             Resume Builder Pro
           </h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 px-4">
             Create ATS-optimized resumes that get you hired
           </p>
-          
+
           {/* ATS Score Display */}
-          <div className="flex justify-center items-center gap-6 mb-6">
-            <ATSScoreCard score={currentScore} />
-            <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <div className="w-full sm:w-auto">
+              <ATSScoreCard score={currentScore} />
+            </div>
+            <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
               <Button
                 variant={showPreview ? "default" : "outline"}
                 onClick={() => setShowPreview(!showPreview)}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2 w-full xs:w-auto text-sm"
+                size="sm"
               >
-                <Eye size={16} />
+                <Eye size={14} className="sm:w-4 sm:h-4" />
                 {showPreview ? 'Edit' : 'Preview'}
               </Button>
-              <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
-                <Download size={16} />
+              <Button className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 w-full xs:w-auto text-sm" size="sm">
+                <Download size={14} className="sm:w-4 sm:h-4" />
                 Download PDF
               </Button>
             </div>
           </div>
 
           {/* Progress Indicators */}
-          <div className="flex justify-center items-center gap-4 mb-8">
+          <div className="grid grid-cols-3 sm:flex sm:flex-wrap justify-center items-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8 px-2">
             {progressSections.map((section) => {
               const Icon = section.icon;
               return (
                 <div
                   key={section.id}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all cursor-pointer ${
+                  className={`flex flex-col items-center gap-1 p-2 sm:p-3 rounded-lg transition-all cursor-pointer min-w-0 ${
                     activeTab === section.id
-                      ? 'bg-blue-100 text-blue-700'
+                      ? 'bg-blue-100 text-blue-700 shadow-sm'
                       : section.completed
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-100 text-gray-400'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                   }`}
                   onClick={() => setActiveTab(section.id)}
                 >
-                  <Icon size={20} />
-                  <span className="text-xs font-medium">{section.name}</span>
+                  <Icon size={16} className="sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm font-medium text-center leading-tight">
+                    {section.name}
+                  </span>
                   {section.completed && (
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                   )}
                 </div>
               );
@@ -243,64 +247,119 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        {showPreview ? (
-          <ResumePreview data={resumeData} />
-        ) : (
-          <div className="max-w-4xl mx-auto">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="hidden">
-                <TabsTrigger value="personal">Personal</TabsTrigger>
-                <TabsTrigger value="experience">Experience</TabsTrigger>
-                <TabsTrigger value="education">Education</TabsTrigger>
-                <TabsTrigger value="skills">Skills</TabsTrigger>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <TabsTrigger value="certifications">Certifications</TabsTrigger>
-              </TabsList>
+        <div className="flex flex-col xl:grid xl:grid-cols-4 xl:gap-8">
+          {/* Forms/Preview Section */}
+          <div className="xl:col-span-3 mb-6 xl:mb-0">
+            {showPreview ? (
+              <div className="w-full overflow-hidden">
+                <ResumePreview data={resumeData} />
+              </div>
+            ) : (
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                {/* Mobile/Tablet Tab Navigation */}
+                <div className="block xl:hidden mb-4">
+                  <TabsList className="grid w-full grid-cols-2 h-auto gap-1 p-1">
+                    <TabsTrigger value="personal" className="text-xs p-2">Personal</TabsTrigger>
+                    <TabsTrigger value="experience" className="text-xs p-2">Experience</TabsTrigger>
+                  </TabsList>
+                  <TabsList className="grid w-full grid-cols-2 h-auto gap-1 p-1 mt-2">
+                    <TabsTrigger value="education" className="text-xs p-2">Education</TabsTrigger>
+                    <TabsTrigger value="skills" className="text-xs p-2">Skills</TabsTrigger>
+                  </TabsList>
+                  <TabsList className="grid w-full grid-cols-2 h-auto gap-1 p-1 mt-2">
+                    <TabsTrigger value="projects" className="text-xs p-2">Projects</TabsTrigger>
+                    <TabsTrigger value="certifications" className="text-xs p-2">Certifications</TabsTrigger>
+                  </TabsList>
+                </div>
 
-              <TabsContent value="personal">
-                <PersonalInfoForm
-                  data={resumeData.personalInfo}
-                  onChange={(data) => updateResumeData('personalInfo', data)}
-                />
-              </TabsContent>
+                {/* Desktop Tab Navigation */}
+                <div className="hidden xl:block mb-4">
+                  <TabsList className="grid w-full grid-cols-6 h-auto">
+                    <TabsTrigger value="personal" className="text-sm">Personal</TabsTrigger>
+                    <TabsTrigger value="experience" className="text-sm">Experience</TabsTrigger>
+                    <TabsTrigger value="education" className="text-sm">Education</TabsTrigger>
+                    <TabsTrigger value="skills" className="text-sm">Skills</TabsTrigger>
+                    <TabsTrigger value="projects" className="text-sm">Projects</TabsTrigger>
+                    <TabsTrigger value="certifications" className="text-sm">Certifications</TabsTrigger>
+                  </TabsList>
+                </div>
 
-              <TabsContent value="experience">
-                <WorkExperienceForm
-                  data={resumeData.workExperience}
-                  onChange={(data) => updateResumeData('workExperience', data)}
-                />
-              </TabsContent>
+                <div className="w-full overflow-hidden">
+                  <TabsContent value="personal" className="mt-0">
+                    <PersonalInfoForm
+                      data={resumeData.personalInfo}
+                      onChange={(data) => updateResumeData('personalInfo', data)}
+                    />
+                  </TabsContent>
 
-              <TabsContent value="education">
-                <EducationForm
-                  data={resumeData.education}
-                  onChange={(data) => updateResumeData('education', data)}
-                />
-              </TabsContent>
+                  <TabsContent value="experience" className="mt-0">
+                    <WorkExperienceForm
+                      data={resumeData.workExperience}
+                      onChange={(data) => updateResumeData('workExperience', data)}
+                    />
+                  </TabsContent>
 
-              <TabsContent value="skills">
-                <SkillsForm
-                  data={resumeData.skills}
-                  onChange={(data) => updateResumeData('skills', data)}
-                />
-              </TabsContent>
+                  <TabsContent value="education" className="mt-0">
+                    <EducationForm
+                      data={resumeData.education}
+                      onChange={(data) => updateResumeData('education', data)}
+                    />
+                  </TabsContent>
 
-              <TabsContent value="projects">
-                <ProjectsForm
-                  data={resumeData.projects}
-                  onChange={(data) => updateResumeData('projects', data)}
-                />
-              </TabsContent>
+                  <TabsContent value="skills" className="mt-0">
+                    <SkillsForm
+                      data={resumeData.skills}
+                      onChange={(data) => updateResumeData('skills', data)}
+                    />
+                  </TabsContent>
 
-              <TabsContent value="certifications">
-                <CertificationsForm
-                  data={resumeData.certifications}
-                  onChange={(data) => updateResumeData('certifications', data)}
-                />
-              </TabsContent>
-            </Tabs>
+                  <TabsContent value="projects" className="mt-0">
+                    <ProjectsForm
+                      data={resumeData.projects}
+                      onChange={(data) => updateResumeData('projects', data)}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="certifications" className="mt-0">
+                    <CertificationsForm
+                      data={resumeData.certifications}
+                      onChange={(data) => updateResumeData('certifications', data)}
+                    />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            )}
           </div>
-        )}
+
+          {/* ATS Score Sidebar - Only show on desktop when not in preview mode */}
+          {!showPreview && (
+            <div className="xl:col-span-1">
+              {/* Mobile/Tablet: Horizontal card at top */}
+              <div className="block xl:hidden mb-6">
+                <Card className="w-full">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">ATS Score</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ATSScoreCard score={currentScore} />
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Desktop: Sticky sidebar */}
+              <div className="hidden xl:block sticky top-4">
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle className="text-xl">ATS Score</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ATSScoreCard score={currentScore} />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
